@@ -71,7 +71,6 @@ paPlot_noGR <- aedes_ntx_L5.tidy.pa %>% mutate(Gene_name = reorder_within(Gene_n
         axis.ticks.x=element_blank()) +
   geom_hline(aes(yintercept=0)) + geom_vline(aes(xintercept=5))
 
-
 ## summarise counts
 aedes_ntx_L5.tidy.an %>% filter(value > 1) %>% count(tissue)
 aedes_ntx_L5.tidy.pa %>% filter(value > 1) %>% count(tissue)
@@ -82,4 +81,37 @@ aedes_ntx_L5.tidy.pa %>%filter(family %in% c("Or","Ir")) %>%
   filter(value > 1) %>% count(tissue)
 
 
+## Drosophila
+dmel <- read_excel(path='../raw data/Menuz-2014-summary.xlsx') %>% 
+  select(Gene_name,ato,cs) %>%
+  arrange(desc(cs)) %>% 
+  mutate(Gene_name=factor(Gene_name, levels=Gene_name))
+
+dmel.tidy <- gather(dmel,tissue,value,-Gene_name)
+dmel.tidy$family <- str_sub(dmel.tidy$Gene_name,1,2)
+
+dmel_plot <- dmel.tidy %>% mutate(Gene_name = reorder_within(Gene_name, -value, tissue)) %>% 
+  filter(family %in% c("Or","Ir","Gr")) %>%
+  ggplot(data=,aes(x=Gene_name,y=log10(value+0.01),colour=family)) + geom_point() + 
+  facet_grid(.~tissue, scales="free_x") + 
+  scale_x_reordered() + xlab("Chemoreceptor genes") + 
+  ylab('log10 (RPKM + 0.01)') +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  geom_hline(aes(yintercept=0.8)) + geom_vline(aes(xintercept=43))
+
+dmel_plot_noGr <- dmel.tidy %>% mutate(Gene_name = reorder_within(Gene_name, -value, tissue)) %>% 
+  filter(family %in% c("Or","Ir")) %>%
+  ggplot(data=,aes(x=Gene_name,y=log10(value+0.01),colour=family)) + geom_point() + 
+  facet_grid(.~tissue, scales="free_x") + 
+  scale_x_reordered() + xlab("Chemoreceptor genes") + 
+  ylab('log10 (RPKM + 0.01)') +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  geom_hline(aes(yintercept=0.8)) + geom_vline(aes(xintercept=43))
+
+## summarise counts
+dmel.tidy %>% filter(value > 10^0.8) %>% count(tissue)
+dmel.tidy %>%filter(family %in% c("Or","Ir")) %>%
+  filter(value > 10^0.8) %>% count(tissue)
 
