@@ -1,4 +1,10 @@
-### code to read in previously published chemoreceptor expression data 
+### code to read and plot previously published antennal chemoreceptor abundance data from
+### D. melanogaster (Menuz et al., 2014), An. gambiae (Slotman et al., 2020), and Ae. aegypti (Matthews et al., 2018)
+
+### Ben Matthews
+### ben.matthews@zoology.ubc.ca
+
+plotting 
 library(readxl)
 library(ggplot2)
 library(dplyr)
@@ -7,10 +13,11 @@ library(stringr)
 library(tidytext)
 library(cowplot)
 
+
 # Slotman 2020 - Anopheles quadriannulatus and Anopheles coluzzii
-coluzzii_quadriannulatus_M <- read_excel(path='../raw data/13071_2020_4085_MOESM4_ESM.xlsx')
-coluzzii_M_F <- read_excel(path='../raw data/13071_2020_4085_MOESM6_ESM.xlsx')
-quadriannulatus_M_F <- read_excel(path='../raw data/13071_2020_4085_MOESM7_ESM.xlsx')
+coluzzii_quadriannulatus_M <- read_excel(path='raw data/13071_2020_4085_MOESM4_ESM.xlsx')
+coluzzii_M_F <- read_excel(path='raw data/13071_2020_4085_MOESM6_ESM.xlsx')
+quadriannulatus_M_F <- read_excel(path='raw data/13071_2020_4085_MOESM7_ESM.xlsx')
 
 Agam.LUT <- read_excel('Agam-LUT.xlsx')
 slotman.LUT <- read_excel('slotman-annotations.xlsx')
@@ -148,7 +155,7 @@ aedes_ntx_L5.tidy.pa %>%filter(family %in% c("Or","Ir")) %>%
 
 
 ## Drosophila
-dmel <- read_excel(path='../raw data/Menuz-2014-summary.xlsx') %>% 
+dmel <- read_excel(path='raw data/Menuz-2014-summary.xlsx') %>% 
   select(Gene_name,ato,cs) %>%
   arrange(desc(cs)) %>% 
   mutate(Gene_name=factor(Gene_name, levels=Gene_name))
