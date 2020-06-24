@@ -59,26 +59,24 @@ agam.plot.an <- my.coluzzii.ant %>% mutate(RepMean = (as.numeric(col.ant.1.tpm) 
   scale_x_reordered() + xlab("Chemoreceptor genes") + 
   ylab('log10 (TPM + 0.01)') + ggtitle('Anopheles antenna') +
   theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) +
-  geom_hline(aes(yintercept=0)) + geom_vline(aes(xintercept=67))
+        axis.ticks.x=element_blank()) + ylim(-2,4)+
+ geom_vline(aes(xintercept=67))#+geom_hline(aes(yintercept=0))
 
 agam.plot.pa <- my.coluzzii.palp %>% mutate(RepMean = (as.numeric(col.palp.1.tpm) + as.numeric(col.palp.2.tpm)) / 2) %>% mutate(Gene = reorder(Gene,-RepMean)) %>%
   ggplot(data=,aes(x=Gene,y=log10((RepMean)+0.01),colour=Family)) + geom_point() + 
   scale_x_reordered() + xlab("Chemoreceptor genes") + 
   ylab('log10 (TPM + 0.01)') + ggtitle('Anopheles palp') +
   theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) +
-  geom_hline(aes(yintercept=0)) + geom_vline(aes(xintercept=5))
+        axis.ticks.x=element_blank()) + ylim(-2,4)+
+ geom_vline(aes(xintercept=5))#+geom_hline(aes(yintercept=0))
 
 agam.test.plot.an <- coluzzii_chemo %>% mutate(Geneid = reorder(Geneid, -CFA)) %>%
 ggplot(data=,aes(x=Geneid,y=log10(CFA+0.01),colour=Family)) + geom_point() + 
   scale_x_reordered() + xlab("Chemoreceptor genes") + 
   ylab('log10 (TPM + 0.01)')+
   theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) +
-  geom_hline(aes(yintercept=0)) + geom_vline(aes(xintercept=61))
-
-
+        axis.ticks.x=element_blank()) + ylim(-2,4)+
+ geom_vline(aes(xintercept=61))#+geom_hline(aes(yintercept=0))
 
 # Matthews 2018 - Aedes aegypti neurotranscriptome with AaegL5
 
@@ -107,8 +105,8 @@ anPlot <- aedes_ntx_L5.tidy.an %>% mutate(Gene_name = reorder_within(Gene_name, 
   scale_x_reordered() + xlab("Chemoreceptor genes") + 
   ylab('log10 (TPM + 0.01)') + ggtitle('Aedes antenna') +
   theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) +
-  geom_hline(aes(yintercept=0)) + geom_vline(aes(xintercept=61))
+        axis.ticks.x=element_blank()) + ylim(-2,4)+
+  geom_vline(aes(xintercept=61))#+geom_hline(aes(yintercept=0))
 
 paPlot <- aedes_ntx_L5.tidy.pa %>% mutate(Gene_name = reorder_within(Gene_name, -value, tissue)) %>% filter(tissue == 'FePaSF') %>%
   ggplot(data=,aes(x=Gene_name,y=log10(value+0.01),colour=family)) + geom_point() + 
@@ -116,8 +114,8 @@ paPlot <- aedes_ntx_L5.tidy.pa %>% mutate(Gene_name = reorder_within(Gene_name, 
   scale_x_reordered() + xlab("Chemoreceptor genes") + 
   ylab('log10 (TPM + 0.01)') + ggtitle('Aedes palp') + 
   theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) +
-  geom_hline(aes(yintercept=0)) + geom_vline(aes(xintercept=5))
+        axis.ticks.x=element_blank())+ ylim(-2,4)+
+   geom_vline(aes(xintercept=5))#+geom_hline(aes(yintercept=0))
 
 anPlot_noGR <- aedes_ntx_L5.tidy.an %>% mutate(Gene_name = reorder_within(Gene_name, -value, tissue)) %>% 
   filter(family %in% c("Or","Ir")) %>%
@@ -126,8 +124,8 @@ anPlot_noGR <- aedes_ntx_L5.tidy.an %>% mutate(Gene_name = reorder_within(Gene_n
   scale_x_reordered() + xlab("Chemoreceptor genes") + 
   ylab('log10 (TPM + 0.01)') +
   theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) +
-  geom_hline(aes(yintercept=0)) + geom_vline(aes(xintercept=61))
+        axis.ticks.x=element_blank()) + ylim(-2,4)+
+  geom_vline(aes(xintercept=61))#+geom_hline(aes(yintercept=0))
 
 paPlot_noGR <- aedes_ntx_L5.tidy.pa %>% mutate(Gene_name = reorder_within(Gene_name, -value, tissue)) %>% 
   filter(family %in% c("Or","Ir")) %>%
@@ -136,8 +134,8 @@ paPlot_noGR <- aedes_ntx_L5.tidy.pa %>% mutate(Gene_name = reorder_within(Gene_n
   scale_x_reordered() + xlab("Chemoreceptor genes") + 
   ylab('log10 (TPM + 0.01)') +
   theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) +
-  geom_hline(aes(yintercept=0)) + geom_vline(aes(xintercept=6))
+        axis.ticks.x=element_blank()) + ylim(-2,4)+
+   geom_vline(aes(xintercept=6)) #+geom_hline(aes(yintercept=0))
 
 ## summarise counts
 aedes_ntx_L5.tidy.an %>% filter(value > 1) %>% count(tissue)
@@ -165,7 +163,7 @@ dmel_plot <- dmel.tidy %>% mutate(Gene_name = reorder_within(Gene_name, -value, 
   scale_x_reordered() + xlab("Chemoreceptor genes") + 
   ylab('log10 (RPKM + 0.01)') + ggtitle('Drosophila antenna') +
   theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) +
+        axis.ticks.x=element_blank()) + ylim(-2,4)+
   geom_hline(aes(yintercept=0.8)) + geom_vline(aes(xintercept=54))
 
 dmel_plot_noGr <- dmel.tidy %>% mutate(Gene_name = reorder_within(Gene_name, -value, tissue)) %>% 
@@ -175,9 +173,20 @@ dmel_plot_noGr <- dmel.tidy %>% mutate(Gene_name = reorder_within(Gene_name, -va
   scale_x_reordered() + xlab("Chemoreceptor genes") + 
   ylab('log10 (RPKM + 0.01)') +
   theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) +
+        axis.ticks.x=element_blank())+ ylim(-2,4) + 
   geom_hline(aes(yintercept=0.8)) + geom_vline(aes(xintercept=43))
 
+dmel_plot.tpm <- dmel.tidy %>% mutate(Gene_name = reorder_within(Gene_name, -value, tissue)) %>% filter(tissue=='cs') %>%
+  filter(family %in% c("Or","Ir","Gr")) %>% mutate(tpm = 10^6 * (value/704923.6998)) %>% 
+  ggplot(data=,aes(x=Gene_name,y=log10(tpm+0.01),colour=family)) + geom_point() + 
+  facet_grid(.~tissue, scales="free_x") + 
+  scale_x_reordered() + xlab("Chemoreceptor genes") + 
+  ylab('log10 (TPM + 0.01)') + ggtitle('Drosophila antenna') +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) + ylim(-2,4) +
+  geom_vline(aes(xintercept=51)) + 
+  geom_vline(aes(xintercept=58)) +  geom_hline(aes(yintercept=log10(0.617087867364482 + 0.01))) +
+  geom_hline(aes(yintercept=log10(8.09378021047491 + 0.01)))
 ## summarise counts
 dmel.tidy %>% filter(value > 10^0.8) %>% count(tissue)
 dmel.tidy %>%filter(family %in% c("Or","Ir")) %>%
@@ -193,3 +202,5 @@ ano_grid <- plot_grid(agam.plot.an,agam.plot.pa,nrow=1)
 
 an_only_plot <- plot_grid(anPlot,agam.plot.an,dmel_plot,nrow=3)
 pa_only_plot <- plot_grid(paPlot,agam.plot.pa,nrow=2)
+
+all_together <- plot_grid(aedes_grid,ano_grid,plot_grid(dmel_plot.tpm,dmel_plot.tpm,nrow=1),nrow=3,rel_widths = c(2, 2, 1))
