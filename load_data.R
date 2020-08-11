@@ -4,7 +4,8 @@
 ### Ben Matthews
 ### ben.matthews@zoology.ubc.ca
 
-plotting 
+# plotting
+
 library(readxl)
 library(ggplot2)
 library(dplyr)
@@ -198,8 +199,6 @@ dmel_plot.tpm <- dmel.tidy %>% mutate(Gene_name = reorder_within(Gene_name, -val
 dmel.tidy %>% filter(value > 10^0.8) %>% count(tissue)
 dmel.tidy %>%filter(family %in% c("Or","Ir")) %>%
   filter(value > 10^0.8) %>% count(tissue)
-
-
 
 
 ## final plots
