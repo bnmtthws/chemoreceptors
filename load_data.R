@@ -70,18 +70,6 @@ agam.plot.an <- my.coluzzii.ant %>% mutate(RepMean = (as.numeric(col.ant.1.tpm) 
         axis.ticks.x=element_blank()) + ylim(-2,4)+
  geom_vline(aes(xintercept=67))#+geom_hline(aes(yintercept=0))
 
-agam.plot.an.multi <- my.coluzzii.ant %>%  
-  pivot_longer(c(col.ant.1.tpm,col.ant.2.tpm),names_to ="replicate",values_to="TPM") %>%
-  mutate(TPM.log = log10(TPM+0.01)) %>%
-  ggplot(data=,aes(x=reorder(Gene,TPM.log,FUN=median),y=TPM.log,colour=Family)) + geom_point(alpha=0.25) + 
-  stat_summary(fun=median,fun.min=median,fun.max=median,geom="crossbar",size=1) +
-  scale_x_reordered() + xlab("Chemoreceptor genes") + 
-  ylab('log10 (TPM + 0.01)') + ggtitle('Anopheles antenna') +
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) + ylim(-2,4)+
-  geom_vline(aes(xintercept=67))#+geom_hline(aes(yintercept=0))
-
-
 
 agam.plot.pa <- my.coluzzii.palp %>% mutate(RepMean = (as.numeric(col.palp.1.tpm) + as.numeric(col.palp.2.tpm)) / 2) %>% mutate(Gene = reorder(Gene,-RepMean)) %>%
   ggplot(data=,aes(x=Gene,y=log10((RepMean)+0.01),colour=Family)) + geom_point() + 
@@ -120,14 +108,6 @@ aedes_ntx_L5.tidy.an$family <- str_sub(aedes_ntx_L5.tidy.an$Gene_name,1,2)
 aedes_ntx_L5.tidy.pa <- gather(aedes_ntx_L5_pa,tissue,value,-Gene_name) 
 aedes_ntx_L5.tidy.pa$family <- str_sub(aedes_ntx_L5.tidy.pa$Gene_name,1,2)
 
-anPlot <- aedes_ntx_L5.tidy.an %>% mutate(Gene_name = reorder_within(Gene_name, -value, tissue)) %>% filter(tissue == 'FeAnSF') %>%
-  ggplot(data=,aes(x=Gene_name,y=log10(value+0.01),colour=family)) + geom_point() + 
-  facet_grid(.~tissue, scales="free_x") + 
-  scale_x_reordered() + xlab("Chemoreceptor genes") + 
-  ylab('log10 (TPM + 0.01)') + ggtitle('Aedes antenna') +
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) + ylim(-2,4)+
-  geom_vline(aes(xintercept=61))#+geom_hline(aes(yintercept=0))
 
 paPlot <- aedes_ntx_L5.tidy.pa %>% mutate(Gene_name = reorder_within(Gene_name, -value, tissue)) %>% filter(tissue == 'FePaSF') %>%
   ggplot(data=,aes(x=Gene_name,y=log10(value+0.01),colour=family)) + geom_point() + 
@@ -183,55 +163,48 @@ dmel.all <- read_excel(path='raw data/Menuz-2014-fullDataset-S1-selected.xlsx') 
 
 dmel.chemo <- dmel.all %>% 
   subset(fbgn %in% fbgn.dmel)
-dmel.chemo$family <- str_sub(dmel.all$symbol,1,2)
 
-dmel.all.cs.multi <- dmel.chemo %>%  
-  pivot_longer(c(cs1.tpm,cs2.tpm,cs3.tpm),names_to ="replicate",values_to="TPM") %>%
-  mutate(TPM.log = log10(TPM+0.01)) %>%
-  ggplot(data=,aes(x=reorder(symbol,TPM.log,FUN=median),y=TPM.log,colour=family)) + 
-  geom_point(alpha=0.25) + 
-  stat_summary(fun=median,fun.min=median,fun.max=median,geom="point",size=1) +
-  scale_x_reordered() + xlab("Chemoreceptor genes") + 
-  ylab('log10 (TPM + 0.01)') + ggtitle('Drosophila antenna') +
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank())
+dmel.chemo$family <- str_sub(dmel.chemo$symbol,1,2)
+
+
+
 
 dmel.all.tpm <- dmel.all %>% mutate(tpm.cs1 = 10^6 * (cs1/sum(cs1)))
 
 dmel.tidy <- gather(dmel,tissue,value,-Gene_name)
 dmel.tidy$family <- str_sub(dmel.tidy$Gene_name,1,2)
 
-dmel_plot <- dmel.tidy %>% mutate(Gene_name = reorder_within(Gene_name, -value, tissue)) %>% filter(tissue=='cs') %>%
-  filter(family %in% c("Or","Ir","Gr")) %>%
-  ggplot(data=,aes(x=Gene_name,y=log10(value+0.01),colour=family)) + geom_point() + 
-  facet_grid(.~tissue, scales="free_x") + 
-  scale_x_reordered() + xlab("Chemoreceptor genes") + 
-  ylab('log10 (RPKM + 0.01)') + ggtitle('Drosophila antenna') +
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) + ylim(-2,4)+
-  geom_hline(aes(yintercept=0.8)) + geom_vline(aes(xintercept=54))
-
-dmel_plot_noGr <- dmel.tidy %>% mutate(Gene_name = reorder_within(Gene_name, -value, tissue)) %>% 
-  filter(family %in% c("Or","Ir")) %>%
-  ggplot(data=,aes(x=Gene_name,y=log10(value+0.01),colour=family)) + geom_point() + 
-  facet_grid(.~tissue, scales="free_x") + 
-  scale_x_reordered() + xlab("Chemoreceptor genes") + 
-  ylab('log10 (RPKM + 0.01)') +
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank())+ ylim(-2,4) + 
-  geom_hline(aes(yintercept=0.8)) + geom_vline(aes(xintercept=43))
-
-dmel_plot.tpm <- dmel.tidy %>% mutate(Gene_name = reorder_within(Gene_name, -value, tissue)) %>% filter(tissue=='cs') %>%
-  filter(family %in% c("Or","Ir","Gr")) %>% mutate(tpm = 10^6 * (value/704923.6998)) %>% 
-  ggplot(data=,aes(x=Gene_name,y=log10(tpm+0.01),colour=family)) + geom_point() + 
-  facet_grid(.~tissue, scales="free_x") + 
-  scale_x_reordered() + xlab("Chemoreceptor genes") + 
-  ylab('log10 (TPM + 0.01)') + ggtitle('Drosophila antenna') +
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) + ylim(-2,4) +
-  geom_vline(aes(xintercept=51)) + 
-  geom_vline(aes(xintercept=58)) +  geom_hline(aes(yintercept=log10(0.617087867364482 + 0.01))) +
-  geom_hline(aes(yintercept=log10(8.09378021047491 + 0.01)))
+# dmel_plot <- dmel.tidy %>% mutate(Gene_name = reorder_within(Gene_name, -value, tissue)) %>% filter(tissue=='cs') %>%
+#   filter(family %in% c("Or","Ir","Gr")) %>%
+#   ggplot(data=,aes(x=Gene_name,y=log10(value+0.01),colour=family)) + geom_point() + 
+#   facet_grid(.~tissue, scales="free_x") + 
+#   scale_x_reordered() + xlab("Chemoreceptor genes") + 
+#   ylab('log10 (RPKM + 0.01)') + ggtitle('Drosophila antenna') +
+#   theme(axis.text.x=element_blank(),
+#         axis.ticks.x=element_blank()) + ylim(-2,4)+
+#   geom_hline(aes(yintercept=0.8)) + geom_vline(aes(xintercept=54))
+# 
+# dmel_plot_noGr <- dmel.tidy %>% mutate(Gene_name = reorder_within(Gene_name, -value, tissue)) %>% 
+#   filter(family %in% c("Or","Ir")) %>%
+#   ggplot(data=,aes(x=Gene_name,y=log10(value+0.01),colour=family)) + geom_point() + 
+#   facet_grid(.~tissue, scales="free_x") + 
+#   scale_x_reordered() + xlab("Chemoreceptor genes") + 
+#   ylab('log10 (RPKM + 0.01)') +
+#   theme(axis.text.x=element_blank(),
+#         axis.ticks.x=element_blank())+ ylim(-2,4) + 
+#   geom_hline(aes(yintercept=0.8)) + geom_vline(aes(xintercept=43))
+# 
+# dmel_plot.tpm <- dmel.tidy %>% mutate(Gene_name = reorder_within(Gene_name, -value, tissue)) %>% filter(tissue=='cs') %>%
+#   filter(family %in% c("Or","Ir","Gr")) %>% mutate(tpm = 10^6 * (value/704923.6998)) %>% 
+#   ggplot(data=,aes(x=Gene_name,y=log10(tpm+0.01),colour=family)) + geom_point() + 
+#   facet_grid(.~tissue, scales="free_x") + 
+#   scale_x_reordered() + xlab("Chemoreceptor genes") + 
+#   ylab('log10 (TPM + 0.01)') + ggtitle('Drosophila antenna') +
+#   theme(axis.text.x=element_blank(),
+#         axis.ticks.x=element_blank()) + ylim(-2,4) +
+#   geom_vline(aes(xintercept=51)) + 
+#   geom_vline(aes(xintercept=58)) +  geom_hline(aes(yintercept=log10(0.617087867364482 + 0.01))) +
+#   geom_hline(aes(yintercept=log10(8.09378021047491 + 0.01)))
 ## summarise counts
 dmel.tidy %>% filter(value > 10^0.8) %>% count(tissue)
 dmel.tidy %>%filter(family %in% c("Or","Ir")) %>%
@@ -251,4 +224,41 @@ all_together <- plot_grid(aedes_grid,ano_grid,plot_grid(dmel_plot.tpm,dmel_plot.
 
 ## final with reps
 
-all.rep <- plot_grid(dmel.all.cs.multi,)
+#drosophila
+dmel.all.cs.multi <- dmel.chemo %>%  
+  pivot_longer(c(cs1.tpm,cs2.tpm,cs3.tpm),names_to ="replicate",values_to="TPM") %>%
+  mutate(TPM.log = log10(TPM+0.01)) %>%
+  ggplot(data=,aes(x=reorder(symbol,TPM.log,FUN=median),y=TPM.log,colour=family)) + 
+  geom_point(alpha=0.25) + 
+  stat_summary(fun=median,fun.min=median,fun.max=median,geom="point",size=1) +
+  scale_x_reordered() + xlab("Chemoreceptor genes") + 
+  ylab('log10 (TPM + 0.01)') + ggtitle('Drosophila antenna') +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) + ylim(-2,4)
+
+#anopheles
+agam.plot.an.multi <- my.coluzzii.ant %>%  
+  pivot_longer(c(col.ant.1.tpm,col.ant.2.tpm),names_to ="replicate",values_to="TPM") %>%
+  mutate(TPM.log = log10(TPM+0.01)) %>%
+  ggplot(data=,aes(x=reorder(Gene,TPM.log,FUN=median),y=TPM.log,colour=Family)) + geom_point(alpha=0.25) + 
+  stat_summary(fun=median,fun.min=median,fun.max=median,geom="crossbar",size=1) +
+  scale_x_reordered() + xlab("Chemoreceptor genes") + 
+  ylab('log10 (TPM + 0.01)') + ggtitle('Anopheles antenna') +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) + ylim(-2,4)+
+  geom_vline(aes(xintercept=67))#+geom_hline(aes(yintercept=0))
+
+# aedes
+anPlot <- aedes_ntx_L5.tidy.an %>% mutate(Gene_name = reorder_within(Gene_name, -value, tissue)) %>% filter(tissue == 'FeAnSF') %>%
+  ggplot(data=,aes(x=Gene_name,y=log10(value+0.01),colour=family)) + geom_point() + 
+  facet_grid(.~tissue, scales="free_x") + 
+  scale_x_reordered() + xlab("Chemoreceptor genes") + 
+  ylab('log10 (TPM + 0.01)') + ggtitle('Aedes antenna') +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) + ylim(-2,4)+
+  geom_vline(aes(xintercept=61))#+geom_hline(aes(yintercept=0))
+
+
+
+
+all.rep <- plot_grid(dmel.all.cs.multi,agam.plot.an.multi,anPlot,nrow=1)
