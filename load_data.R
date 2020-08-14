@@ -70,6 +70,19 @@ agam.plot.an <- my.coluzzii.ant %>% mutate(RepMean = (as.numeric(col.ant.1.tpm) 
         axis.ticks.x=element_blank()) + ylim(-2,4)+
  geom_vline(aes(xintercept=67))#+geom_hline(aes(yintercept=0))
 
+agam.plot.an.multi <- my.coluzzii.ant %>%  
+  pivot_longer(c(col.ant.1.tpm,col.ant.2.tpm),names_to ="replicate",values_to="TPM") %>%
+  mutate(TPM.log = log10(TPM+0.01)) %>%
+  ggplot(data=,aes(x=reorder(Gene,TPM.log,FUN=median),y=TPM.log,colour=Family)) + geom_point(alpha=0.25) + 
+  stat_summary(fun=median,fun.min=median,fun.max=median,geom="crossbar",size=1) +
+  scale_x_reordered() + xlab("Chemoreceptor genes") + 
+  ylab('log10 (TPM + 0.01)') + ggtitle('Anopheles antenna') +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) + ylim(-2,4)+
+  geom_vline(aes(xintercept=67))#+geom_hline(aes(yintercept=0))
+
+
+
 agam.plot.pa <- my.coluzzii.palp %>% mutate(RepMean = (as.numeric(col.palp.1.tpm) + as.numeric(col.palp.2.tpm)) / 2) %>% mutate(Gene = reorder(Gene,-RepMean)) %>%
   ggplot(data=,aes(x=Gene,y=log10((RepMean)+0.01),colour=Family)) + geom_point() + 
   scale_x_reordered() + xlab("Chemoreceptor genes") + 
