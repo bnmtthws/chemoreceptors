@@ -177,8 +177,26 @@ dmel <- read_excel(path='raw data/Menuz-2014-summary.xlsx') %>%
 fbgn.dmel <- c(dmel$fbgn,'FBgn0261401','FBgn0261402')
 
 dmel.all <- read_excel(path='raw data/Menuz-2014-fullDataset-S1-selected.xlsx') %>% 
+  mutate(cs1.tpm = 10^6 * (cs1/sum(cs1))) %>%
+  mutate(cs2.tpm = 10^6 * (cs2/sum(cs2))) %>%
+  mutate(cs3.tpm = 10^6 * (cs3/sum(cs3)))
+
+dmel.chemo <- dmel.all %>% 
   subset(fbgn %in% fbgn.dmel)
-dmel.all$family <- str_sub(dmel.all$symbol,1,2)
+dmel.chemo$family <- str_sub(dmel.all$symbol,1,2)
+
+dmel.all.cs.multi <- dmel.chemo %>%  
+  pivot_longer(c(cs1.tpm,cs2.tpm,cs3.tpm),names_to ="replicate",values_to="TPM") %>%
+  mutate(TPM.log = log10(TPM+0.01)) %>%
+  ggplot(data=,aes(x=reorder(symbol,TPM.log,FUN=median),y=TPM.log,colour=family)) + 
+  geom_point(alpha=0.25) + 
+  stat_summary(fun=median,fun.min=median,fun.max=median,geom="point",size=1) +
+  scale_x_reordered() + xlab("Chemoreceptor genes") + 
+  ylab('log10 (TPM + 0.01)') + ggtitle('Drosophila antenna') +
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())
+
+dmel.all.tpm <- dmel.all %>% mutate(tpm.cs1 = 10^6 * (cs1/sum(cs1)))
 
 dmel.tidy <- gather(dmel,tissue,value,-Gene_name)
 dmel.tidy$family <- str_sub(dmel.tidy$Gene_name,1,2)
