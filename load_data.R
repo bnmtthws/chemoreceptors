@@ -170,9 +170,15 @@ aedes_ntx_L5.tidy.pa %>%filter(family %in% c("Or","Ir")) %>%
 
 ## Drosophila
 dmel <- read_excel(path='raw data/Menuz-2014-summary.xlsx') %>% 
-  select(Gene_name,ato,cs) %>%
+  select(Gene_name,fbgn,ato,cs) %>%
   arrange(desc(cs)) %>% 
   mutate(Gene_name=factor(Gene_name, levels=Gene_name))
+
+fbgn.dmel <- c(dmel$fbgn,'FBgn0261401','FBgn0261402')
+
+dmel.all <- read_excel(path='raw data/Menuz-2014-fullDataset-S1-selected.xlsx') %>% 
+  subset(fbgn %in% fbgn.dmel)
+dmel.all$family <- str_sub(dmel.all$symbol,1,2)
 
 dmel.tidy <- gather(dmel,tissue,value,-Gene_name)
 dmel.tidy$family <- str_sub(dmel.tidy$Gene_name,1,2)
