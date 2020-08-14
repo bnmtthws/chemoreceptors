@@ -247,3 +247,8 @@ an_only_plot <- plot_grid(anPlot,agam.plot.an,dmel_plot,nrow=3)
 pa_only_plot <- plot_grid(paPlot,agam.plot.pa,nrow=2)
 
 all_together <- plot_grid(aedes_grid,ano_grid,plot_grid(dmel_plot.tpm,dmel_plot.tpm,nrow=1),nrow=3,rel_widths = c(2, 2, 1))
+
+
+## final with reps
+
+all.rep <- plot_grid(dmel.all.cs.multi,)
