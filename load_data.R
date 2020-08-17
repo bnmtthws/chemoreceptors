@@ -228,37 +228,64 @@ all_together <- plot_grid(aedes_grid,ano_grid,plot_grid(dmel_plot.tpm,dmel_plot.
 dmel.all.cs.multi <- dmel.chemo %>%  
   pivot_longer(c(cs1.tpm,cs2.tpm,cs3.tpm),names_to ="replicate",values_to="TPM") %>%
   mutate(TPM.log = log10(TPM+0.01)) %>%
-  ggplot(data=,aes(x=reorder(symbol,TPM.log,FUN=median),y=TPM.log,colour=family)) + 
-  geom_point(alpha=0.25) + 
+  ggplot(data=,aes(x=reorder(symbol,desc(TPM.log),FUN=median),y=TPM.log,colour=family)) + 
+  geom_point(alpha=0.25) +   geom_boxplot() + theme_classic() +
   stat_summary(fun=median,fun.min=median,fun.max=median,geom="point",size=1) +
-  scale_x_reordered() + xlab("Chemoreceptor genes") + 
+  scale_x_discrete(labels=c(1:178)) + xlab("Chemoreceptor genes") + 
   ylab('log10 (TPM + 0.01)') + ggtitle('Drosophila antenna') +
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) + ylim(-2,4)
+ ylim(-2,4) +
+    geom_vline(aes(xintercept=51)) +
+    geom_vline(aes(xintercept=58)) +  geom_hline(aes(yintercept=log10(8.44029766702464 + 0.01))) +
+    geom_hline(aes(yintercept=log10(0.634626365749947 + 0.01)))
 
 #anopheles
 agam.plot.an.multi <- my.coluzzii.ant %>%  
   pivot_longer(c(col.ant.1.tpm,col.ant.2.tpm),names_to ="replicate",values_to="TPM") %>%
   mutate(TPM.log = log10(TPM+0.01)) %>%
-  ggplot(data=,aes(x=reorder(Gene,TPM.log,FUN=median),y=TPM.log,colour=Family)) + geom_point(alpha=0.25) + 
-  stat_summary(fun=median,fun.min=median,fun.max=median,geom="crossbar",size=1) +
-  scale_x_reordered() + xlab("Chemoreceptor genes") + 
+  ggplot(data=,aes(x=reorder(Gene,desc(TPM.log),FUN=median),y=TPM.log,colour=Family)) + geom_point(alpha=0.25) + 
+  geom_boxplot() + theme_classic() +
+  #  stat_summary(fun=median,fun.min=median,fun.max=median,geom="point",size=1) +
+  scale_x_discrete(labels=c(1:243)) + xlab("Chemoreceptor genes") + 
   ylab('log10 (TPM + 0.01)') + ggtitle('Anopheles antenna') +
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) + ylim(-2,4)+
-  geom_vline(aes(xintercept=67))#+geom_hline(aes(yintercept=0))
+ ylim(-2,4)+
+  geom_vline(aes(xintercept=67))#+geom_hline(aes(yintercept=0)) 
 
 # aedes
 anPlot <- aedes_ntx_L5.tidy.an %>% mutate(Gene_name = reorder_within(Gene_name, -value, tissue)) %>% filter(tissue == 'FeAnSF') %>%
   ggplot(data=,aes(x=Gene_name,y=log10(value+0.01),colour=family)) + geom_point() + 
-  facet_grid(.~tissue, scales="free_x") + 
-  scale_x_reordered() + xlab("Chemoreceptor genes") + 
+  theme_classic() +
+  xlab("Chemoreceptor genes") + 
   ylab('log10 (TPM + 0.01)') + ggtitle('Aedes antenna') +
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) + ylim(-2,4)+
+ scale_x_discrete(labels=c(1:324)) + ylim(-2,4)+
   geom_vline(aes(xintercept=61))#+geom_hline(aes(yintercept=0))
 
 
+dmel.chemo %>%
+  mutate(TPM.median = select(., c('cs1.tpm','cs2.tpm','cs3.tpm')) %>% 
+           pmap_dbl(~median(c(...)))) %>%
+  arrange(desc(TPM.median)) -> dmel.chemo.median
 
+write.csv(file='dmel.csv',dmel.chemo.median)
+write.csv(file='aaeg.csv',aedes_ntx_L5.tidy.an %>% mutate(Gene_name = reorder_within(Gene_name, -value, tissue)) %>% filter(tissue == 'FeAnSF'))
 
 all.rep <- plot_grid(dmel.all.cs.multi,agam.plot.an.multi,anPlot,nrow=1)
+two.rep <- plot_grid(dmel.all.cs.multi,anPlot,nrow=1)
+
+ggsave2('dmel.pdf',dmel.all.cs.multi,width=3,height=3)
+ggsave2('aeg.pdf',anPlot,width=3,height=3)
+ggsave2('figstart.pdf',all.rep, width = 12, height = 4)
+
+
+sum(aedes_ntx_L5_an$FeAnSF >= 8.44029766702464)
+sum(aedes_ntx_L5_an$FeAnSF >= 0.634626365749947)
+
+sum(dmel.chemo.median$TPM.median  >= 8.44029766702464)
+sum(dmel.chemo.median$TPM.median >= 0.634626365749947)
+
+my.coluzzii.ant %>% mutate(TPM.median = select(., c('col.ant.1.tpm','col.ant.2.tpm')) %>% 
+                             pmap_dbl(~median(c(...)))) -> my.coluzzii.ant
+
+sum(my.coluzzii.ant$TPM.median  >= 8.44029766702464)
+sum(my.coluzzii.ant$TPM.median >= 0.634626365749947)
+
+
