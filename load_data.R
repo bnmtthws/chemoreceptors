@@ -289,3 +289,40 @@ sum(my.coluzzii.ant$TPM.median  >= 8.44029766702464)
 sum(my.coluzzii.ant$TPM.median >= 0.634626365749947)
 
 
+## new plots
+
+aedes_ntx_L5.tidy.an %>% filter(tissue=="FeAnSF" & value > 1)
+
+
+ggplot(data=aedes_ntx_L5.tidy.an %>% subset(tissue=="FeAnSF"),aes(x=log10(value),colour=family)) + stat_ecdf()
+test <- ddply(aedes_ntx_L5.tidy.an %>% subset(tissue=="FeAnSF"),.(family),mutate,count=rank(value))
+ggplot(test)+geom_ribbon(aes(x=log10(value+0.01),ymax=count,fill=family,alpha=0.2),ymin=0)
+
+summ.frame <- NULL
+
+for(VALUE in log10((0.01 + seq(from=0,to=100,by=0.1))))
+{
+  temp.row <- aedes_ntx_L5.tidy.an %>% filter(tissue=="FeAnSF" & log10(0.01+value) > VALUE) %>% add_count(family) %>% select(family,n) %>% distinct()
+  temp.row$VALUE <- VALUE
+  summ.frame = bind_rows(summ.frame,temp.row)
+}
+
+ribbon.plot <- ggplot(data=summ.frame,aes(x=VALUE,y=n,fill=family)) + 
+  geom_ribbon(aes(ymax=n),ymin=0,position="stack") + 
+  geom_hline(yintercept=65)
+
+summ.frame.nolog <- NULL
+
+for(VALUE in seq(from=0,to=100,by=0.1))
+{
+  temp.row <- aedes_ntx_L5.tidy.an %>% filter(tissue=="FeAnSF" & value >= VALUE) %>% add_count(family) %>% select(family,n) %>% distinct()
+  temp.row$VALUE <- VALUE
+  summ.frame.nolog = bind_rows(summ.frame.nolog,temp.row)
+  
+}
+
+ribbon.plot <- ggplot(data=summ.frame.nolog,aes(x=VALUE,y=n,fill=family)) + 
+  geom_ribbon(aes(ymax=n),ymin=0,position="stack") + 
+  geom_hline(yintercept=65)
+
+
