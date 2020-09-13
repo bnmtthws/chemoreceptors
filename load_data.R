@@ -139,8 +139,8 @@ paPlot_noGR <- aedes_ntx_L5.tidy.pa %>% mutate(Gene_name = reorder_within(Gene_n
    geom_vline(aes(xintercept=6)) #+geom_hline(aes(yintercept=0))
 
 ## summarise counts
-aedes_ntx_L5.tidy.an %>% filter(value > 1) %>% count(tissue)
-aedes_ntx_L5.tidy.pa %>% filter(value > 1) %>% count(tissue)
+#aedes_ntx_L5.tidy.an %>% filter(value > 1) %>% count(tissue)
+#aedes_ntx_L5.tidy.pa %>% filter(value > 1) %>% count(tissue)
 
 aedes_ntx_L5.tidy.an %>%filter(family %in% c("Or","Ir")) %>% 
   filter(value > 1) %>% count(tissue)
@@ -309,7 +309,7 @@ for(VALUE in log10((0.01 + seq(from=0,to=100,by=0.1))))
 
 ribbon.plot <- ggplot(data=summ.frame,aes(x=VALUE,y=n,fill=family)) + 
   geom_ribbon(aes(ymax=n),ymin=0,position="stack") + 
-  geom_hline(yintercept=65)
+  geom_hline(yintercept=65) + ylim(0,300) + ggtitle('Aedes aegypti antenna')
 
 summ.frame.nolog <- NULL
 
@@ -321,8 +321,30 @@ for(VALUE in seq(from=0,to=100,by=0.1))
   
 }
 
-ribbon.plot <- ggplot(data=summ.frame.nolog,aes(x=VALUE,y=n,fill=family)) + 
+ribbon.plot.nolog <- ggplot(data=summ.frame.nolog,aes(x=VALUE,y=n,fill=family)) + 
   geom_ribbon(aes(ymax=n),ymin=0,position="stack") + 
   geom_hline(yintercept=65)
+
+dmel.chemo <- dmel.chemo %>% 
+  mutate(cs.tpm.mean = rowMeans(select(., c('cs1.tpm','cs2.tpm','cs3.tpm'))))
+
+
+dmel.summ.frame <- NULL
+
+for(VALUE in log10((0.01 + seq(from=0,to=100,by=0.1))))
+{
+  temp.row <- dmel.chemo %>% filter( log10(0.01+cs.tpm.mean) > VALUE) %>% 
+    add_count(family) %>% select(family,n) %>% distinct()
+  temp.row$VALUE <- VALUE
+  dmel.summ.frame = bind_rows(dmel.summ.frame,temp.row)
+}
+
+dmel.ribbon.plot <- ggplot(data=dmel.summ.frame,aes(x=VALUE,y=n,fill=family)) + 
+  geom_ribbon(aes(ymax=n),ymin=0,position="stack") + 
+  geom_hline(yintercept=54) + ylim(0,300)  + ggtitle('Drosophila melanogaster antenna')
+
+# example summaries
+sum(dmel.summ.frame[dmel.summ.frame$VALUE == log10(0.01 + 5),]$n)
+
 
 
